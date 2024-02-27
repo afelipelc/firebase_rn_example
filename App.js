@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import NotesScreen from './src/features/notes/notes/application/screens/NotesScreen';
+import AddNote from './src/features/notes/notes/application/screens/AddNoteScreen';
 
 export default function App() {
   /*
@@ -11,7 +12,7 @@ export default function App() {
     </View>
   );
   */
- return <NotesScreen />
+ return <AddNote />
 }
 
 const styles = StyleSheet.create({

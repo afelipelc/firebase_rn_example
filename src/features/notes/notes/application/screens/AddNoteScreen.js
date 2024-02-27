@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { supabase } from "../../../../lib/supabase";
+import { createNote, saveNote } from "../../datasource/notesDataSource";
 
 /***
  * Pantalla para agregar una nueva nota
@@ -11,7 +11,7 @@ export default function AddNote() {
   /**
    * función que guarda la nota en supabase
    */
-  const saveNote = async () => {
+  const onSaveNote = async () => {
 
     // si no hay valor en note, no continuar
     if(!note) {
@@ -19,26 +19,15 @@ export default function AddNote() {
     }
 
     //guarda la nota
-    const { data, error } = await supabase
-    .from('notes')
-    .insert([
-      { 
-        note: note,
-        date: new Date(),
-      },
-    ])
-    .select();
+    const result = await createNote({
+      note,
+      date: (new Date()).getTime(), 
+    });
 
-    console.log(data);
-
-    if (error) Alert.alert(error.message)
-    
-    // si no hay error, la nota se guardó
-    // limpiar el formulario
-    if (!error) {
+    if (result.success) {
       setNote('');
-      Alert.alert('La nota ha sido guardada :)');
     }
+    Alert.alert(result.message);
   }
 
   return(
@@ -57,7 +46,7 @@ export default function AddNote() {
         <Button
           title="Registrar Nota"
           disabled={!note} // si no hay nota, deshabilitar
-          onPress={saveNote}
+          onPress={onSaveNote}
         />
       </View>
     </View>

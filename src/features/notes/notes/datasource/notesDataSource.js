@@ -6,7 +6,7 @@
 // agregar nota
 // guardar nota
 
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, set, push } from "firebase/database";
 
 import firebaseDb from '../../../../config/firebaseDb';
 
@@ -74,4 +74,54 @@ export function notesListMin( setData ) {
 
     setData(notes);
   });
+}
+
+/**
+ * Función que actualiza una nota
+ * @param {*} note 
+ * @returns 
+ */
+export function updateNote(note) {
+  const db = getDatabase( firebaseDb );
+  const noteRef = ref(db, `notes/${note.id}`);
+
+  // quitar el id de note
+  set(noteRef, {
+    note: note.note,
+    date: note.date,
+  })
+  .then(() => {
+    return {
+      success: true,
+      message: 'El registro fue actualizado.',
+    }
+  })
+  .catch(() => {
+    return {
+      success: false,
+      message: `Algo salió mal, no se pudo actualizar :( Error: ${error.message}`
+    }
+  });
+
+}
+
+export function createNote(note) {
+  const db = getDatabase( firebaseDb );
+  const noteRef = ref(db, `notes`);
+
+  // quitar el id de note
+  return push(noteRef, note )
+  .then(() => {
+    return {
+      success: true,
+      message: 'Se ha guardado la nota.',
+    }
+  })
+  .catch(() => {
+    return {
+      success: false,
+      message: `Algo salió mal, no se pudo guardar :( Error: ${error.message}`
+    }
+  });
+
 }
