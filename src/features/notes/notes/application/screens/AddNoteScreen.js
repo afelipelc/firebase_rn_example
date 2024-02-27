@@ -21,7 +21,7 @@ export default function AddNote() {
     //guarda la nota
     const result = await createNote({
       note,
-      date: (new Date()).getTime(), 
+      date: (new Date()).toISOString(), 
     });
 
     if (result.success) {
