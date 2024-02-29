@@ -2,7 +2,9 @@ import React from 'react';
 import firebaseDb from 'firebase/app';
 import 'firebase/database';
 import 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const SessionContext = React.createContext();
 
@@ -12,13 +14,14 @@ const USER_LOGUED = 'session/USER_LOGUED';
 // initial state
 const initialState = {
   user: null,
+  sessionLoaded: false,
 };
 
 // reducer
 function sessionReducer(state, action) {
   switch (action.type) {
     case USER_LOGUED:
-      return { ...state, user: action.payload };
+      return { ...state, sessionLoaded: true,  user: action.payload };
     default:
       throw new Error(`Acción desconocida: ${action.type}`);
   }
@@ -56,20 +59,30 @@ function SessionProvider({ children }) {
       }
     });
   }
+
+  // instalar @react-native-async-storage/async-storage
   
-  async function loadSession() {
+  function loadSession() {
+    console.log("Verificar sesión");
     const auth = getAuth(firebaseDb);
+    /*const auth = initializeAuth(firebaseDb, {
+      persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+    });
+    */
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
         // set session data
         dispatch({ type: USER_LOGUED, payload: user });
       } else {
         // clear session
         dispatch({ type: USER_LOGUED, payload: null });
       }
+    }, (error) => {
+      console.log(error);
+      return { user: null, error };
     });
+    
   }
   
   function logOut() {

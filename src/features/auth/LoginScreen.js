@@ -19,7 +19,7 @@ AppState.addEventListener('change', (state) => {
 })
 */
 
-function LoginView() {
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,6 +35,24 @@ function LoginView() {
   const onLogin = () => {
     console.log("hacer login");
     
+    setLoading(true);
+
+    loginEmailPassword(email, password)
+    .then((result) => {
+      console.log(result);
+      Alert.alert(result.message);
+
+      if(result.signedIn) {
+        //llevar al home
+        navigation.navigate('NotesScreen');
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      setLoading(false);
+    })
   }
 
   return (
@@ -65,14 +83,6 @@ function LoginView() {
       </View>
     </View>
   )
-}
-
-export default function LoginScreen () {
-  return (
-    <SessionProvider>
-      <LoginView />
-    </SessionProvider>
-  );
 }
 
 const styles = StyleSheet.create({
